@@ -7,8 +7,8 @@ def banner(app):
         id="banner",
         className="banner",
         children=[
+            html.H5("Fondpedia"),
             html.Img(src=app.get_asset_url("plotly_logo.png")),
-            html.H2("Ant Wealth Fond")
         ],
     )
 

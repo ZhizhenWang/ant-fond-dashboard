@@ -1,7 +1,5 @@
-@font-face {
-    font-family: Acumin;
-    font-weight: bold;
-    src: url("Acumin-BdPro.otf") format("opentype");
+* {
+    font-family: 'Noto Sans CJK SC', 'Noto Sans CJK', 'Source Han Sans', source-han-sans-simplified-c, sans-serif;
 }
 
 #app-container {
@@ -27,22 +25,21 @@ hr {
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
 }
-
-.banner Img {
-    position: relative;
-    height: 3rem;
-    width: auto;
+.banner H5 {
+    color: #2c8cff;
     margin-left: 2%;
 }
-
-H5 {
-    color: #2c8cff;
-    font-weight: 300;
+.banner Img {
+    position: relative;
+    height: 2rem;
+    width: auto;
 }
 
+
 H5, H3 {
-    font-family: Acumin, "Helvetica Neue", sans-serif;
+    font-weight: 450;
 }
 
 #left-column {
@@ -85,14 +82,14 @@ H5, H3 {
     font-weight: bold;
 }
 
-#patient_volume_card, #wait_time_card {
+#dashboard_card, #wait_time_card {
     background-color: #FFFFFF;
     padding: 1rem;
     margin: auto;
     margin-top: 20px;
 }
 
-#patient_volume_card > b, #wait_time_card > b {
+#dashboard_card > b, #dashboard_card > b {
     line-height: 2.5;
 }
 
@@ -199,7 +196,7 @@ H5, H3 {
     display: flex;
 }
 .flex-left {
-    flex: 0 0 86%;
+    flex: 0 0 75%;
 }
 .flex-right {
     flex: 1;

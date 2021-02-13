@@ -29,7 +29,7 @@ server = app.server
 app.config.suppress_callback_exceptions = True
 
 markdown_text = '''
-###### 基金的A类份额和C类份额有何不同?
+### 基金的A类份额和C类份额有何不同?
 
 A类和C类只是基金费用的收取方式不同，在投资运作上没有区别，A类和C类单独估值，净值上可能会略有不同。
 - A类是在认购/申购时收取一次性收取认购/申购费用；而C类是在认购/申购时不收取认购/申购费用，而是设置每年的销售服务费，每天会从基金净值中计提。
@@ -48,8 +48,6 @@ def generate_title():
     return html.Div(
         id="description-card",
         children=[
-            html.H5("Ant Fond Fee Analytics"),
-            html.H3("Welcome to the Fond Trading Fee Dashboard"),
             html.Div(
                 id="intro",
                 children=dcc.Markdown(markdown_text),
@@ -65,7 +63,7 @@ def generate_control_card():
     return html.Div(
         id='control-card',
         children=[
-            html.P("Select example:", className='control-title'),
+            html.P("请选择基金样本：", className='control-title'),
             dcc.Dropdown(
                 id="fond-select",
                 options=[{"label": i, "value": i} for i in fond_list],
@@ -74,12 +72,12 @@ def generate_control_card():
             html.Br(),
 
             html.P(id='control-detail'),
-            html.P("Buy Amount:", className='control-title'),
+            html.P("购买金额 (元)：", className='control-title'),
             dcc.Input(
                 id="amount",
                 type="number"
             ),
-            html.P("Buy Days:", className='control-title'),
+            html.P("持有天数：", className='control-title'),
             dcc.Input(
                 id="days",
                 type="number"
@@ -166,8 +164,9 @@ def generate_fee_table(fond_name, fee_type, unit=1):
                  format=Format(symbol=Symbol.yes, symbol_suffix=' 万元' if unit > 1 else ' 元')),
             dict(id='最高金额', name='最高金额', type='numeric',
                  format=Format(symbol=Symbol.yes, symbol_suffix=' 万元' if unit > 1 else ' 元')),
-            dict(id='费率', name='费率', type='numeric', format=percentage)
+            dict(id='费率', name='费率')
         ]
+        data['费率'] = data['费率'].apply(lambda rate: f'{rate * 100}%' if rate < 1 else f'{rate} 元')
         trans_data = data.to_dict('records')
 
     return DataTable(
@@ -224,12 +223,17 @@ app.layout = html.Div(
             id='right-column',
             className='eight columns',
             children=[
-                html.H3("累计费用图表"),
-                html.Hr(),
-                dcc.Loading(
-                    id="loading-2",
-                    children=[dcc.Graph(id="fee_dashboard")],
-                    type="circle",
+                html.Div(
+                    id='dashboard_card',
+                    children=[
+                        html.H5("A类与C类基金 累计费用对比图表"),
+                        html.Hr(),
+                        dcc.Loading(
+                            id="loading-2",
+                            children=[dcc.Graph(id="fee_dashboard")],
+                            type="circle",
+                        )
+                    ]
                 )
             ]
         ),
@@ -249,7 +253,19 @@ def update_graph(amount):
     fig.add_trace(go.Scatter(x=x, y=y_a, name=fond_list[0]))
     fig.add_trace(go.Scatter(x=x, y=y_b, name=fond_list[1]))
     fig.update_traces(mode='lines')
-    fig.update_yaxes(rangemode='tozero')
+    fig.update_yaxes(rangemode='tozero', tickformat='.f')
+    fig.update_layout(yaxis_ticksuffix='元',
+                      yaxis_showticksuffix='last',
+                      xaxis_ticksuffix='天',
+                      xaxis_showticksuffix='last',
+                      autosize=True,
+                      margin=dict(l=0, r=0, t=30, b=40))
+    fig.update_layout(legend=dict(
+        yanchor="top",
+        y=0.99,
+        xanchor="left",
+        x=0.01
+    ))
 
     return fig
 
@@ -277,7 +293,7 @@ def update_table(unit_wan, fond_select):
     dash.dependencies.Input('amount', 'value'))
 def update_buy_value(fond_select, amount):
     category_name = get_fond_abbr(fond_select)
-    return f"申购费用：{calculate_fee(category_name, 'buy', amount, None)}"
+    return f"申购费用：{calculate_fee(category_name, 'buy', amount, None):.2f}".rstrip('0').rstrip('.')
 
 
 @app.callback(
@@ -288,8 +304,8 @@ def update_buy_value(fond_select, amount):
     dash.dependencies.Input('days', 'value'))
 def update_buy_value(fond_select, amount, days):
     category_name = get_fond_abbr(fond_select)
-    operation_fee = f"运作费用：{calculate_fee(category_name, 'operation', amount, days)}"
-    sell_fee = f"赎回费用：{calculate_fee(category_name, 'sell', amount, days)}"
+    operation_fee = f"运作费用：{calculate_fee(category_name, 'operation', amount, days):.2f}".rstrip('0').rstrip('.')
+    sell_fee = f"赎回费用：{calculate_fee(category_name, 'sell', amount, days):.2f}".rstrip('0').rstrip('.')
     return operation_fee, sell_fee
 
 
