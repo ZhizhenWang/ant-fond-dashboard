@@ -1,17 +1,12 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_table
-import plotly.express as px
-import pandas as pd
+import plotly.graph_objects as go
+from dash_daq.BooleanSwitch import BooleanSwitch
 from dash_table import DataTable, FormatTemplate
 from dash_table.Format import Format, Symbol
-from dash_daq.BooleanSwitch import BooleanSwitch
+
 from utils import banner, DataFetcher
-import json
-import plotly.express as px
-import plotly.graph_objects as go
-import time
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
